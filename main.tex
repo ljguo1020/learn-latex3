@@ -1,0 +1,38 @@
+\documentclass[UTF8,twoside]{ctexart}
+\input{settings.tex}
+\author{ljguo}
+\title{\LaTeX3 入门}
+\date{\today}
+
+\begin{document}
+\maketitle
+\section{函数}
+\function{\cs_new:Npn}[Nn,cn,cpn]
+\begin{example}
+\ExplSyntaxOn
+\cs_new:Npn \l_my_cmd:n#1 {i~love~#1!}
+\l_my_cmd:n{fish}
+\ExplSyntaxOff
+\end{example}
+
+\function{\cs_new:Npx}[Nx,cx,cpx]
+\begin{example}
+\ExplSyntaxOn
+\cs_new:Npx \l_my_cmdx:n#1 {i~love~#1!}
+\l_my_cmd:n{fish}
+\ExplSyntaxOff
+\end{example}
+\demoref{3}
+\newpage
+\function{\cs_set:Npn}[Nn,cn,cpn]
+\begin{example}
+\ExplSyntaxOn
+\cs_set:Npn \foo_cmd:n #1 {i~love~#1}
+\foo_cmd:n{fish}
+\ExplSyntaxOff
+\end{example}
+
+\section{asdaf}
+
+
+\end{document}
