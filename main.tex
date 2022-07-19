@@ -1,12 +1,13 @@
-\documentclass[UTF8,twoside]{ctexart}
+\documentclass[twoside]{ctexart}
 \input{settings.tex}
+\usepackage{graphicx}
 \author{ljguo}
 \title{\LaTeX3 入门}
 \date{\today}
 
 \begin{document}
 \maketitle
-\section{函数}
+\section{function}
 \function{\cs_new:Npn}[Nn,cn,cpn]
 \begin{example}
 \ExplSyntaxOn
@@ -32,7 +33,208 @@
 \ExplSyntaxOff
 \end{example}
 
-\section{asdaf}
+\section{COLOR}
+\function{\color_group_begin: \color_group_end:}
+\begin{example}
+\ExplSyntaxOn
+\cs_meaning:N \color_group_begin: \par 
+\cs_meaning:N \color_group_end:
+\ExplSyntaxOff
+\end{example}
+\function{\color_set:nn{<name>}{<color expression>}}
+\begin{example}
+\ExplSyntaxOn
+\color_set:nn{main}{red!30!cyan}
+\color_select:n{main}
+\centering
+\LaTeX
+\hrule
+\ExplSyntaxOff
+\end{example}
 
+\function{\int_format:n \fp_format:n}
+\begin{example}
+\ExplSyntaxOn
+\seq_new:N \l_before_seq
+\seq_new:N \l_after_seq
+\cs_generate_variant:Nn \regex_extract_all:nnN {nxN}
+\cs_set:Npn \int_format:n #1#2 {
+  \regex_extract_all:nnN {\d{1,#2}} {#1} \l_tmpa_seq 
+  \seq_use:Nn \l_tmpa_seq{~}
+}
+\cs_set:Npn \fp_format:n #1#2 {
+  \regex_split:nnN {\.} {#1} \l_tmpb_seq
+  \regex_extract_all:nxN {\d{1,#2}} {\seq_item:Nn \l_tmpb_seq{1}} \l_before_seq 
+  \regex_extract_all:nxN {\d{1,#2}} {\seq_item:Nn \l_tmpb_seq{2}} \l_after_seq
+  \seq_use:Nn \l_before_seq{~} . \seq_use:Nn \l_after_seq{~}
+}
+\int_format:n{123456789}{3}\par 
+\fp_format:n{152.354126859}{4}\par 
+\int_format:n{23354862}{2}\par
+\fp_format:n{0.1010010001000010}{3} 
+\ExplSyntaxOff
+\end{example}
 
+\function{picture}
+\begin{example}
+\ExplSyntaxOn
+\centering
+\begin{tikzpicture}
+\int_step_inline:nnn{0}{7}
+{
+  \node[circle,fill=gray!50,draw] (a#1) at (-#1*45\c_colon_str 3){#1};
+  \draw[blue] (0,0) -- (a#1);
+}
+\int_step_inline:nnn{0}{7}
+{
+  \draw[-latex,red] (a#1) -- (a\int_mod:nn{#1+1}{8});
+}
+\int_step_inline:nnn{0}{7}
+{
+  \int_step_inline:nnn{#1+5}{#1+6}
+  {
+    \draw[-latex,red] (a#1) -- (a\int_mod:nn{##1}{8});
+  }
+}
+\end{tikzpicture}
+\ExplSyntaxOff
+\end{example}
+
+\function{expand \d}
+\begin{example}
+\def\a{aaa}
+\def\b{\a\a}  
+\def\c{\b\b} 
+展开一次：
+\expandafter\def\expandafter\d\expandafter{\c}
+\meaning\d \par 
+展开两次：
+\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter
+\def\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter
+\d\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter\expandafter
+{\expandafter\expandafter\c} 
+\meaning\d \par 
+递归展开：
+\edef\d{\c} 
+\meaning\d
+\end{example}
+
+\function{noexpand \b}
+\begin{example}
+\def\a{a}
+\def\b{b}
+\def\c{c}
+(方法一)
+\edef\d{\a\noexpand\b\c}
+\meaning\d \par 
+(方法二)
+\toks0={\b}
+\edef\d{\a\the\toks0\c}
+\meaning\d \par
+(方法三)
+\expandafter\expandafter\expandafter
+\def\expandafter\expandafter\expandafter
+\d\expandafter\expandafter\expandafter
+{\expandafter\a\expandafter\b\c} 
+\meaning\d
+\end{example}
+
+\function{\items}
+\begin{example}
+\newcount\ljguo
+\ljguo = 1
+{\catcode`\-=13
+\catcode`\*=13
+\gdef\begitem{\par\noindent\begingroup\catcode`\-=13\catcode`\*=13
+\def- {\par\noindent\the\ljguo.\advance\ljguo by 1\hskip 1pt\ignorespaces}
+\def* {\par\noindent\hskip4pt$\bullet$\hskip3pt\ignorespaces}}}
+\def\enditem{\par\endgroup}
+{\LARGE Markdown}
+\vskip 0.3cm
+\begitem
+- this is item one. 
+- this is item two.
+ * this is iitem one.
+ * this is iitem two.
+- this is item three.
+* this is iitem one.
+* this is iitem two.
+- this is item four.
+\enditem
+\end{example}
+
+\function{\getlength}
+\begin{example}
+\def\length#1{\count0=0 \getlength#1\end \number\count0}
+\def\getlength#1{\ifx#1\end \let\next=\relax
+\else\advance\count0 by 1\relax \let\next=\getlength\fi \next} 
+\length{asdasf}
+\end{example}
+
+\function{\tokenfill}
+\begin{example}
+\def\tokenfill#1{\leaders\hbox to 0.8em{\hss #1 \hss}\hfill}
+\noindent\tokenfill{$\triangleright$} \par
+begin \tokenfill{$\cdot$} end 
+\end{example}
+
+\function{\length}
+\begin{example}
+\ExplSyntaxOn 
+\makeatletter
+\cs_set:Npn \pgf_length:N #1 {
+  \fp_set:Nn \l_tmpa_fp {\dim_to_fp:n{\pgf@x}}
+  \fp_set:Nn \l_tmpb_fp {\dim_to_fp:n{\pgf@y}}
+  \tl_set:Nx #1{
+    \fp_to_dim:n{\fp_eval:n{({\l_tmpa_fp}^2+{\l_tmpb_fp}^2)^(0.5)}}
+  } 
+}
+\cs_set_eq:NN \length \pgf_length:N 
+\def\getlengthtomarco#1#2{
+  \path #1;
+  \length#2 
+}
+\makeatother
+\ExplSyntaxOff
+
+\begin{tikzpicture}
+  \fill[red] (3,2) coordinate(a) circle(2pt); 
+  \fill[blue] (1,1) coordinate(b) circle(2pt);
+  \coordinate(c) at ($(b)-(a)$);
+  \path (c);
+  \length\r %\r = length "(b) - (a)"
+  \draw[cyan] (b) circle (\r); 
+  \draw[yellow] (a) circle (\r); 
+  \getlengthtomarco{(1,2)}{\r}
+  \draw[] (4,0) circle (\r);
+\end{tikzpicture}
+\end{example}
+
+\function{\@ifnextchar}
+\begin{example}
+\makeatletter
+\def\@cmd[#1]#2{\textcolor{red}{#1} and (#2)}
+\def\cmd{
+  \@ifnextchar[{\@cmd}{\@cmd[default]}
+}
+\cmd{aaa}\par 
+\cmd[bbb]{aaa}
+
+\def\@cmd[#1]#2{\c@md{} and \textcolor{red}{#1} and (#2)}
+\def\cmd#1{
+  \def\c@md{#1}\@ifnextchar[{\@cmd}{\@cmd[default]}
+}
+\cmd{aaa}{ccc}\par 
+\cmd{aaa}[bbb]{ccc}
+\makeatother
+\end{example}
+
+\function{\@ifstar}
+\begin{example}
+\catcode`@=11
+\def\cmd{\@ifstar{\textcolor{red}}{\textcolor{blue}}}
+\cmd*{aaa}\par 
+\cmd{aaa}
+\catcode`@=12
+\end{example}
 \end{document}

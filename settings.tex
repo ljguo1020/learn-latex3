@@ -1,27 +1,59 @@
 \usepackage[margin=2cm]{geometry}
 \usepackage[listings,breakable]{tcolorbox}
 \usepackage{tikz}
+\usetikzlibrary{calc}
 \ExplSyntaxOn
 \clist_new:N \l_function_variant_list %fuction variant list
-\NewDocumentCommand{\function}{vo} % #1:function name #2: variant list
+\NewDocumentCommand{\function}{svo} % #1:function name #2: variant list
 {
-  \IfNoValueTF{#2}
+  \IfBooleanTF{#1}
   {
-    \def\functionn{
-      \texttt{#1}
-      }
+    \IfNoValueTF{#3}
+    {
+      \begin{tcolorbox}[width=\textwidth,left=1mm,right=1mm,top=1mm,bottom=1mm,sharp~corners,colback=white,boxrule=.5pt,colback=lime!30]
+        \texttt{Function}\hskip -2pt \Triangle\hskip -3pt \texttt{#2}\hfill \examplelabel*
+      \end{tcolorbox}
+    }
+    {
+     \clist_gset:Nn \l_function_variant_list {#3}
+      \begin{tcolorbox}[width=\textwidth,left=1mm,right=1mm,top=1mm,bottom=1mm,sharp~corners,colback=white,boxrule=.5pt,colback=lime!30]
+        \texttt{Function}\hskip -2pt \Triangle\hskip -3pt \texttt{#2\textcolor{gray}{(\clist_use:Nn \l_function_variant_list{|})}} \hfill \examplelabel*
+      \end{tcolorbox}
+    }
   }
   {
-    \clist_gset:Nn \l_function_variant_list {#2}
-    \def\functionn{
-      \texttt{
-        #1
-        \textcolor{gray}{(\clist_use:Nn \l_function_variant_list{|})} 
-        }
-      }
+      \IfNoValueTF{#3}
+     {
+       \def\functionn{
+          \texttt{#2}
+         }
+     }
+     {
+        \clist_gset:Nn \l_function_variant_list {#3}
+        \def\functionn{
+          \texttt{
+            #2
+            \textcolor{gray}{(\clist_use:Nn \l_function_variant_list{|})} 
+            }
+          }
+     }
+  }
+
+}
+\NewDocumentCommand{\examplelabel}{s}
+{
+  \IfBooleanTF{#1}{
+  \raisebox{-0.5ex}{
+  \tikz{
+  \node[ball~color=purple,circle,outer~sep=0pt,scale=0.5] {\phantom{2}};  
+    }}
+  }{
+     \raisebox{-0.5ex}{
+     \tikz{
+    \node[ball~color=cyan,circle,outer~sep=0pt,scale=0.5,font=\bfseries] {\theexample};  
+    }}
   }
 }
-
 \ExplSyntaxOff
 \def\Triangle{ % triangle icon
   \raisebox{-0.3ex}{
@@ -35,6 +67,7 @@
         sharp corners,
         colback=white,
         boxrule=.5pt,
+        breakable,
         left=1mm,right=1mm,top=1mm,bottom=1mm,
         before title=\texttt{Function\hskip -3pt \Triangle\hskip -5pt},
         fonttitle=\bfseries,
@@ -43,19 +76,16 @@
         title={~},
     }
 }
-\def\examplelabel{ %label and boll
-  \raisebox{-0.5ex}{
-  \tikz{
-  \node[ball color=cyan,circle,outer sep=0pt,scale=0.5] {\theexample};  
-}}}
+
 \newtcblisting[use counter=example]{example}{
   listing options={
     style=tcblatex,
     language={[LaTeX]TeX},
-    keywordstyle=\color{red!70!black}\bfseries,
-    keywordstyle={[2]\color{blue!70!black}\bfseries},
+    % keywordstyle=\color{cyan!50!green}\bfseries,
+    keywordstyle={\color[RGB]{178,34,34}\bfseries},
+    commentstyle={\color[RGB]{102,205,170}\itshape}
   },
-  example style,title = {\functionn\hfill\examplelabel\label{demo:\theexample}},}
+  example style,title = {\functionn\hfill\examplelabel\label{demo:\theexample}}}
 
 \usepackage{hyperref}
 \hypersetup{colorlinks,linkcolor=blue}
@@ -82,3 +112,16 @@
 \makeatletter
 \patchcmd{\section}{\@startsection}{\newpage\@startsection}{}{}
 \makeatother
+
+\usepackage{fontspec}
+\IfFontExistsTF{calibri.ttf}
+{
+  \setmainfont{calibri.ttf}[
+    BoldFont = calibrib.ttf,
+    ItalicFont = calibrii.ttf,
+    BoldItalicFont = calibriz.ttf
+  ]
+}
+{}
+
+\raggedbottom
