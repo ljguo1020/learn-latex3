@@ -1,14 +1,27 @@
-\documentclass[twoside]{ctexart}
-\input{settings.tex}
-\usepackage{amsfonts,amsmath}
-\usetikzlibrary{arrows.meta}
-\usepackage{graphicx}
+\documentclass{learn}
+
 \author{ljguo}
 \title{\LaTeX3 入门}
 \date{\today}
 
 \begin{document}
+
+\pagenumbering{roman}
 \maketitle
+
+\tableofcontents
+
+\chapter{为什么要出现\LaTeX{}3}
+\pagenumbering{arabic}
+长话短说，\LaTeX{}3 的出现主要是为了解决如下的一些问题
+\begin{itemize}
+  \item 提供一致的命名方案，包括 \TeX{} 原语;
+  \item 区分 \LaTeX{} 命令和函数，并根据他们的功能划分模块;
+  \item 提供了一个简单灵活的参数展开控制方案;
+  \item 提供了一系列的常见数据结构;
+  \item 一种 \TeX{} 编程环境，在这种环境中，所有空白都被忽略.
+\end{itemize}
+
 \section{function}
 \function{\cs_new:Npn}[Nn,cn,cpn]
 \begin{example}
